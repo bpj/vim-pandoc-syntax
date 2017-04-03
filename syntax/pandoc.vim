@@ -137,6 +137,11 @@ if !exists('g:pandoc#syntax#use_definition_lists')
     let g:pandoc#syntax#use_definition_lists = 1
 endif
 " }}}
+" disable syntax highlighting for metadata? (better performances) {{{2
+if !exists('g:pandoc#syntax#use_metadata')
+    let g:pandoc#syntax#use_metadata = 1
+endif
+" }}}
 "}}}1
 
 " Functions: {{{1
@@ -482,13 +487,14 @@ endif
 " }}}
 " }}}
 " YAML: {{{2
-
-try
-    unlet! b:current_syntax
-    syn include @YAML syntax/yaml.vim
-catch /E484/
-endtry
-syn region pandocYAMLHeader start=/\%(\%^\|\_^\s*\n\)\@<=\_^-\{3}\ze\n.\+/ end=/^\([-.]\)\1\{2}$/ keepend contains=@YAML containedin=TOP
+if g:pandoc#syntax#use_metadata == 1
+    try
+        unlet! b:current_syntax
+        syn include @YAML syntax/yaml.vim
+    catch /E484/
+    endtry
+    syn region pandocYAMLHeader start=/\%(\%^\|\_^\s*\n\)\@<=\_^-\{3}\ze\n.\+/ end=/^\([-.]\)\1\{2}$/ keepend contains=@YAML containedin=TOP
+endif
 "}}}
 "}}}1
 
