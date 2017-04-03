@@ -136,6 +136,10 @@ endif
 if !exists('g:pandoc#syntax#use_definition_lists')
     let g:pandoc#syntax#use_definition_lists = 1
 endif
+" disable syntax highlighting for math? (annoying if you don't do math) {{{2
+if !exists('g:pandoc#syntax#use_math')
+    let g:pandoc#syntax#use_math = 1
+endif
 " }}}
 "}}}1
 
@@ -217,11 +221,15 @@ call s:WithConceal('html_c_e', 'syn match pandocHTMLCommentEnd /-->/ contained',
 " Unset current_syntax so the 2nd include will work
 unlet b:current_syntax
 syn include @LATEX syntax/tex.vim
-syn region pandocLaTeXInlineMath start=/\v\\@<!\$\S@=/ end=/\v\\@<!\$\d@!/ keepend contains=@LATEX
-syn region pandocLaTeXInlineMath start=/\\\@<!\\(\S\@=/ end=/\\\@<!\\)\d\@!/ keepend contains=@LATEX
+if g:pandoc#syntax#use_math == 1
+    syn region pandocLaTeXInlineMath start=/\v\\@<!\$\S@=/ end=/\v\\@<!\$\d@!/ keepend contains=@LATEX
+    syn region pandocLaTeXInlineMath start=/\\\@<!\\(\S\@=/ end=/\\\@<!\\)\d\@!/ keepend contains=@LATEX
+endif
 syn match pandocProtectedFromInlineLaTeX /\\\@<!\${.*}\(\(\s\|[[:punct:]]\)\([^$]*\|.*\(\\\$.*\)\{2}\)\n\n\|$\)\@=/ display
 " contains=@LATEX
-syn region pandocLaTeXMathBlock start=/\$\$/ end=/\$\$/ keepend contains=@LATEX
+if g:pandoc#syntax#use_math == 1
+    syn region pandocLaTeXMathBlock start=/\$\$/ end=/\$\$/ keepend contains=@LATEX
+endif
 syn match pandocLaTeXCommand /\\[[:alpha:]]\+\(\({.\{-}}\)\=\(\[.\{-}\]\)\=\)*/ contains=@LATEX 
 syn region pandocLaTeXRegion start=/\\begin{\z(.\{-}\)}/ end=/\\end{\z1}/ keepend contains=@LATEX
 " we rehighlight sectioning commands, because otherwise tex.vim captures all text until EOF or a new sectioning command
